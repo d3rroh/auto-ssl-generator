@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 40" fill="none">
+  <defs>
+    <linearGradient id="shieldGrad" x1="6" y1="4" x2="30" y2="31">
+      <stop offset="0%" stop-color="#2ec7ff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#1e6fa0" stop-opacity="0.65"/>
+    </linearGradient>
+    <linearGradient id="lockGrad" x1="13" y1="17" x2="23" y2="25">
+      <stop offset="0%" stop-color="#2ec7ff" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#1e6fa0" stop-opacity="0.03"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- Shield -->
+  <path d="M18 4 L30 8.5 L30 17 C30 24 24.5 29.5 18 31.5 C11.5 29.5 6 24 6 17 L6 8.5 Z"
+        fill="rgba(46,199,255,0.08)" stroke="url(#shieldGrad)" stroke-width="1.1" stroke-linejoin="round" filter="url(#glow)"/>
+  <!-- Lock body -->
+  <rect x="13" y="17" width="10" height="7.5" rx="1.8" fill="url(#lockGrad)" stroke="#2ec7ff" stroke-width="0.7" stroke-opacity="0.5"/>
+  <!-- Lock shackle -->
+  <path d="M14.8 17 V14.5 C14.8 11.8 21.2 11.8 21.2 14.5 V17"
+        stroke="#2ec7ff" stroke-width="1" stroke-linecap="round" fill="none" stroke-opacity="0.6"/>
+  <!-- Keyhole -->
+  <circle cx="18" cy="20.5" r="1.2" fill="#2ec7ff" fill-opacity="0.85"/>
+  <rect x="17.55" y="20.5" width="0.9" height="2.5" rx="0.4" fill="#2ec7ff" fill-opacity="0.75"/>
+</svg>
