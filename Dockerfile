@@ -1,6 +1,6 @@
 FROM node:22-alpine AS base
 
-RUN apk add --no-cache python3 make g++
+RUN apk add --no-cache python3 build-base
 
 WORKDIR /app
 
