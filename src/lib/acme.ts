@@ -7,17 +7,15 @@ import { generateSecureId } from "./security"
 import { sanitizeDomain, sanitizeEmail } from "./validation"
 import { checkTxtRecordPublic } from "./dns"
 
-// Force IPv4 — this machine has no IPv6 but Node.js tries it first and hangs
+// Force IPv4 — Docker has no IPv6, Node.js tries it first and hangs
 dns.setDefaultResultOrder("ipv4first")
+
+// Replace global HTTPS agent with IPv4-only agent
+// This forces ALL outgoing HTTPS connections (including acme-client's axios) to use IPv4
+;(https as unknown as { globalAgent: https.Agent }).globalAgent = new https.Agent({ family: 4 })
 
 const DIRECTORY_URL =
   process.env.ACME_DIRECTORY_URL || "https://acme-v02.api.letsencrypt.org/directory"
-
-const ipv4Agent = new https.Agent({ family: 4 })
-
-// Force acme-client's axios to use IPv4-only agent
-acme.axios.defaults.httpAgent = ipv4Agent
-acme.axios.defaults.httpsAgent = ipv4Agent
 
 function generatePrivateKeySync(): string {
   return crypto.generateKeyPairSync("rsa", {
