@@ -9,10 +9,6 @@ import { checkTxtRecordPublic } from "./dns"
 // Force IPv4 — this machine has no IPv6 but Node.js tries it first and hangs
 dns.setDefaultResultOrder("ipv4first")
 
-// Reduce acme-client axios retries so we fail fast on 429 rate limits
-const axiosInternal = require("acme-client/src/axios") as any
-axiosInternal.defaults.acmeSettings.retryMaxAttempts = 1
-
 const DIRECTORY_URL =
   process.env.ACME_DIRECTORY_URL || "https://acme-v02.api.letsencrypt.org/directory"
 
