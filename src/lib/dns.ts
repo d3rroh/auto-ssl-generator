@@ -1,46 +1,31 @@
-import * as dns from "dns"
+import { resolveTxtTcp, resolveTxtTcpPublic } from "./dns-tcp"
 
-const dnsResolver = new dns.Resolver()
+const CLUSTER_DNS = ["10.152.183.213"]
+const PUBLIC_DNS = ["8.8.8.8", "1.1.1.1"]
 
 export async function checkTxtRecord(
   hostname: string,
   expectedValue: string
 ): Promise<{ found: boolean; records: string[] }> {
-  return new Promise((resolve) => {
-    dnsResolver.resolveTxt(hostname, (err, records) => {
-      if (err) {
-        resolve({ found: false, records: [] })
-        return
-      }
-
-      const flatRecords = records.map((r) => r.join(""))
-      const found = flatRecords.some((r) => r === expectedValue)
-
-      resolve({ found, records: flatRecords })
-    })
-  })
+  try {
+    const result = await resolveTxtTcp(hostname, [...CLUSTER_DNS, ...PUBLIC_DNS])
+    const found = result.records.some((r) => r === expectedValue)
+    return { found, records: result.records }
+  } catch {
+    return { found: false, records: [] }
+  }
 }
 
 export async function checkTxtRecordPublic(
   hostname: string,
   expectedValue: string
 ): Promise<{ found: boolean; records: string[] }> {
-  const publicResolver = new dns.Resolver()
-  publicResolver.setServers(["8.8.8.8", "1.1.1.1"])
-
-  return new Promise((resolve) => {
-    publicResolver.resolveTxt(hostname, (err, records) => {
-      if (err) {
-        resolve({ found: false, records: [] })
-        return
-      }
-
-      const flatRecords = records.map((r) => r.join(""))
-      const found = flatRecords.some((r) => r === expectedValue)
-
-      resolve({ found, records: flatRecords })
-    })
-  })
+  try {
+    const result = await resolveTxtTcpPublic(hostname, expectedValue, PUBLIC_DNS)
+    return { found: result.found, records: result.records }
+  } catch {
+    return { found: false, records: [] }
+  }
 }
 
 export async function waitForDnsPropagation(

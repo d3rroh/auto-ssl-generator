@@ -1,19 +1,21 @@
 import { NextResponse } from "next/server"
-import * as dns from "dns"
 import * as https from "https"
+import { queryWithFallback } from "@/lib/dns-tcp"
 
 export async function GET() {
   const results: Record<string, unknown> = {}
 
-  // 1. DNS resolution
+  // 1. DNS resolution via TCP (works even when UDP is broken by Cilium)
   try {
-    const addresses = await new Promise<dns.LookupAddress[]>((resolve, reject) => {
-      dns.lookup("acme-v02.api.letsencrypt.org", { all: true }, (err, addrs) => {
-        if (err) reject(err)
-        else resolve(addrs)
-      })
-    })
-    results.dns = { resolved: true, addresses }
+    const result = await queryWithFallback(
+      ["10.152.183.213", "8.8.8.8"],
+      "acme-v02.api.letsencrypt.org",
+      1 // A record
+    )
+    const addresses = result.answers
+      .filter((a) => a.type === 1)
+      .map((a) => ({ address: a.data, family: 4 }))
+    results.dns = { resolved: addresses.length > 0, addresses, method: "tcp" }
   } catch (err: unknown) {
     results.dns = { resolved: false, error: err instanceof Error ? err.message : String(err) }
   }
