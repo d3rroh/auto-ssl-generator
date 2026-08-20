@@ -37,9 +37,7 @@ export interface Job {
   lastAccessed: number
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const jobs: Map<string, Job> = (globalThis as any).__sslJobs ?? new Map<string, Job>()
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 if (!(globalThis as any).__sslJobs) (globalThis as any).__sslJobs = jobs
 
 const JOB_EXPIRY = parseInt(process.env.JOB_EXPIRY_MS || "3600000", 10)

@@ -10,7 +10,6 @@ import { checkTxtRecordPublic } from "./dns"
 dns.setDefaultResultOrder("ipv4first")
 
 // Reduce acme-client axios retries so we fail fast on 429 rate limits
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const axiosInternal = require("acme-client/src/axios") as any
 axiosInternal.defaults.acmeSettings.retryMaxAttempts = 1
 
@@ -31,9 +30,7 @@ interface StoredState {
   accountUrl: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const stateStore: Map<string, StoredState> = (globalThis as any).__sslStateStore ?? new Map<string, StoredState>()
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 if (!(globalThis as any).__sslStateStore) (globalThis as any).__sslStateStore = stateStore
 
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
