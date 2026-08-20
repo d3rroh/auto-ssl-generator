@@ -1,6 +1,7 @@
 import * as acme from "acme-client"
 import * as crypto from "crypto"
 import * as dns from "dns"
+import * as https from "https"
 import { createJob, updateJob, getJob, type Job, type Challenge } from "./jobs"
 import { generateSecureId } from "./security"
 import { sanitizeDomain, sanitizeEmail } from "./validation"
@@ -11,6 +12,12 @@ dns.setDefaultResultOrder("ipv4first")
 
 const DIRECTORY_URL =
   process.env.ACME_DIRECTORY_URL || "https://acme-v02.api.letsencrypt.org/directory"
+
+const ipv4Agent = new https.Agent({ family: 4 })
+
+// Force acme-client's axios to use IPv4-only agent
+acme.axios.defaults.httpAgent = ipv4Agent
+acme.axios.defaults.httpsAgent = ipv4Agent
 
 function generatePrivateKeySync(): string {
   return crypto.generateKeyPairSync("rsa", {
