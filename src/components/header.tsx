@@ -11,7 +11,7 @@ interface HeaderProps {
 const SCENE_CONFIG: Record<SceneState, { label: string; color: string; active: boolean }> = {
   idle:              { label: "OPERATIONAL", color: "#2ec7ff", active: false },
   requesting:        { label: "PROCESSING",  color: "#ff2d2d", active: true },
-  dns_challenge:     { label: "PROCESSING",  color: "#ff2d2d", active: true },
+  dns_challenge:     { label: "DNS VALIDATION", color: "#2ec7ff", active: true },
   dns_verified:      { label: "VERIFIED",    color: "#00d26a", active: true },
   validating:        { label: "VALIDATING",  color: "#ff2d2d", active: true },
   unlocking:         { label: "ISSUING",     color: "#00d26a", active: true },

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getJob } from "@/lib/jobs"
+import { getJob, deleteJob } from "@/lib/jobs"
 import { checkRateLimit, getClientIp, SECURITY_HEADERS } from "@/lib/security"
 import JSZip from "jszip"
 
@@ -104,10 +104,26 @@ export async function GET(request: Request) {
       cert: job.certificate.cert,
       chain: job.certificate.chain,
       fullchain: job.certificate.fullchain,
+      privateKey: job.certificate.privateKey,
       issuedAt: job.certificate.issuedAt,
       expiresAt: job.certificate.expiresAt,
       domains: job.domains,
     },
     { headers: { ...SECURITY_HEADERS } }
   )
+}
+
+export async function DELETE(request: Request) {
+  const url = new URL(request.url)
+  const jobId = url.searchParams.get("jobId")
+
+  if (!jobId) {
+    return NextResponse.json(
+      { error: "Job ID is required." },
+      { status: 400, headers: { ...SECURITY_HEADERS } }
+    )
+  }
+
+  deleteJob(jobId)
+  return NextResponse.json({ ok: true }, { headers: { ...SECURITY_HEADERS } })
 }

@@ -5,7 +5,7 @@ import { checkRateLimit, getClientIp, SECURITY_HEADERS } from "@/lib/security"
 
 export async function POST(request: Request) {
   const ip = getClientIp(request)
-  const rateLimit = checkRateLimit(`check-dns:${ip}`)
+  const rateLimit = checkRateLimit(`check-dns:${ip}`, 30)
 
   if (!rateLimit.allowed) {
     return NextResponse.json(
@@ -44,11 +44,6 @@ export async function POST(request: Request) {
     const result = await checkTxtRecord(challenge.dnsName, challenge.dnsValue)
 
     if (result.found) {
-      const allVerified = job.challenges.every((c) => {
-        if (c.domain === domain) return true
-        return true
-      })
-
       const verifiedDomains = new Set<string>()
       for (const c of job.challenges) {
         const r = await checkTxtRecord(c.dnsName, c.dnsValue)

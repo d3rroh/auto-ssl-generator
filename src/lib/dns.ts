@@ -21,6 +21,28 @@ export async function checkTxtRecord(
   })
 }
 
+export async function checkTxtRecordPublic(
+  hostname: string,
+  expectedValue: string
+): Promise<{ found: boolean; records: string[] }> {
+  const publicResolver = new dns.Resolver()
+  publicResolver.setServers(["8.8.8.8", "1.1.1.1"])
+
+  return new Promise((resolve) => {
+    publicResolver.resolveTxt(hostname, (err, records) => {
+      if (err) {
+        resolve({ found: false, records: [] })
+        return
+      }
+
+      const flatRecords = records.map((r) => r.join(""))
+      const found = flatRecords.some((r) => r === expectedValue)
+
+      resolve({ found, records: flatRecords })
+    })
+  })
+}
+
 export async function waitForDnsPropagation(
   hostname: string,
   expectedValue: string,

@@ -37,16 +37,27 @@ export interface Job {
   lastAccessed: number
 }
 
-const jobs = new Map<string, Job>()
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const jobs: Map<string, Job> = (globalThis as any).__sslJobs ?? new Map<string, Job>()
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+if (!(globalThis as any).__sslJobs) (globalThis as any).__sslJobs = jobs
 
 const JOB_EXPIRY = parseInt(process.env.JOB_EXPIRY_MS || "3600000", 10)
 const CLEANUP_INTERVAL = 60000
+
+const STALE_THRESHOLD = 600000 // 10 minutes
 
 setInterval(() => {
   const now = Date.now()
   for (const [id, job] of jobs) {
     if (now - job.lastAccessed > JOB_EXPIRY) {
       jobs.delete(id)
+    } else if (
+      job.status !== "completed" &&
+      job.status !== "failed" &&
+      now - job.createdAt > STALE_THRESHOLD
+    ) {
+      jobs.set(id, { ...job, status: "failed", error: "Job timed out — abandoned" })
     }
   }
 }, CLEANUP_INTERVAL)
@@ -77,5 +88,11 @@ export function deleteJob(id: string): boolean {
 }
 
 export function getJobCount(): number {
-  return jobs.size
+  let count = 0
+  for (const job of jobs.values()) {
+    if (job.status !== "completed" && job.status !== "failed") {
+      count++
+    }
+  }
+  return count
 }

@@ -1,6 +1,13 @@
 "use client"
 
-import { CheckCircle2, Shield, Calendar } from "lucide-react"
+import { motion } from "framer-motion"
+import {
+  Shield,
+  Calendar,
+  Lock,
+  Globe,
+  CheckCircle2,
+} from "lucide-react"
 import { formatDate } from "@/lib/utils"
 
 interface CertificateSuccessProps {
@@ -9,57 +16,117 @@ interface CertificateSuccessProps {
   expiresAt: string
 }
 
-export function CertificateSuccess({ domains, issuedAt, expiresAt }: CertificateSuccessProps) {
+function CertInfoRow({
+  icon: Icon,
+  label,
+  value,
+  color,
+  mono,
+  delay,
+}: {
+  icon: typeof Shield
+  label: string
+  value: string
+  color?: string
+  mono?: boolean
+  delay: number
+}) {
   return (
-    <div className="panel border-signal-success-border p-6" style={{ animation: "verified-settle 0.5s ease-out" }}>
-      <div className="flex flex-col items-center text-center">
-        <div className="mb-4" style={{ animation: "check-settle 0.4s ease-out" }}>
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-signal-success-dim ring-2 ring-signal-success/25">
-            <CheckCircle2 className="h-8 w-8 text-signal-success" />
-          </div>
-        </div>
+    <motion.div
+      className="cert-info-row"
+      initial={{ opacity: 0, x: -8 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.35, delay }}
+    >
+      <span className="cert-info-label">
+        <Icon className="h-3 w-3" style={{ color: color || "var(--text-muted)" }} />
+        {label}
+      </span>
+      <span className={`cert-info-value ${mono ? "mono" : ""}`}>
+        {value}
+      </span>
+    </motion.div>
+  )
+}
 
-        <h2 className="mb-1 text-lg font-semibold text-text-primary">
-          Certificate Generated
-        </h2>
-        <p className="mb-5 text-[13px] text-text-secondary">
-          Your SSL certificate is ready for installation.
-        </p>
-
-        <div className="w-full max-w-xs space-y-1.5">
-          <div className="flex items-center justify-between rounded border border-border-subtle bg-base/50 px-3 py-2">
-            <span className="flex items-center gap-1.5 text-[11px] text-text-muted">
-              <Shield className="h-3 w-3" /> Status
-            </span>
-            <span className="mono text-[11px] font-semibold text-signal-success">Active</span>
-          </div>
-          <div className="flex items-center justify-between rounded border border-border-subtle bg-base/50 px-3 py-2">
-            <span className="text-[11px] text-text-muted">Issuer</span>
-            <span className="mono text-[11px] font-medium text-text-secondary">Let&apos;s Encrypt</span>
-          </div>
-          <div className="flex items-center justify-between rounded border border-border-subtle bg-base/50 px-3 py-2">
-            <span className="text-[11px] text-text-muted">Domains</span>
-            <div className="flex flex-wrap justify-end gap-1">
-              {domains.map((d) => (
-                <span key={d} className="mono rounded bg-field px-1.5 py-0.5 text-[10px] font-medium text-text-primary">
-                  {d}
-                </span>
-              ))}
-            </div>
-          </div>
-          <div className="flex items-center justify-between rounded border border-border-subtle bg-base/50 px-3 py-2">
-            <span className="flex items-center gap-1.5 text-[11px] text-text-muted">
-              <Calendar className="h-3 w-3" /> Issued
-            </span>
-            <span className="mono text-[11px] font-medium text-text-secondary">{formatDate(issuedAt)}</span>
-          </div>
-          <div className="flex items-center justify-between rounded border border-border-subtle bg-base/50 px-3 py-2">
-            <span className="flex items-center gap-1.5 text-[11px] text-text-muted">
-              <Calendar className="h-3 w-3" /> Expires
-            </span>
-            <span className="mono text-[11px] font-medium text-text-secondary">{formatDate(expiresAt)}</span>
-          </div>
+export function CertificateSuccess({
+  domains,
+  issuedAt,
+  expiresAt,
+}: CertificateSuccessProps) {
+  return (
+    <div className="cert-success-container">
+      {/* Hero status */}
+      <motion.div
+        className="cert-success-hero"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45 }}
+      >
+        <div className="cert-success-shield">
+          <CheckCircle2 className="h-10 w-10 text-[#00d26a]" />
+          <div className="cert-success-shield-glow" />
         </div>
+        <div>
+          <h2 className="cert-success-title">Certificate Issued</h2>
+          <p className="cert-success-sub">
+            Your SSL certificate is active and ready for installation.
+          </p>
+        </div>
+      </motion.div>
+
+      {/* Certificate details */}
+      <div className="cert-details-panel">
+        <CertInfoRow
+          icon={Globe}
+          label="Domain"
+          value={domains[0]}
+          color="#2ec7ff"
+          mono
+          delay={0.15}
+        />
+        {domains.length > 1 && (
+          <CertInfoRow
+            icon={Globe}
+            label="SANs"
+            value={`${domains.length - 1} additional domain(s)`}
+            color="#2ec7ff"
+            delay={0.2}
+          />
+        )}
+        <CertInfoRow
+          icon={Shield}
+          label="Issuer"
+          value="Let's Encrypt R3"
+          color="#7b68ee"
+          delay={0.25}
+        />
+        <CertInfoRow
+          icon={Lock}
+          label="Validation"
+          value="DNS-01 Challenge"
+          color="#f0b429"
+          delay={0.3}
+        />
+        <CertInfoRow
+          icon={CheckCircle2}
+          label="Status"
+          value="Active"
+          color="#00d26a"
+          delay={0.35}
+        />
+        <CertInfoRow
+          icon={Calendar}
+          label="Issued"
+          value={formatDate(issuedAt)}
+          delay={0.4}
+        />
+        <CertInfoRow
+          icon={Calendar}
+          label="Expires"
+          value={formatDate(expiresAt)}
+          delay={0.45}
+        />
       </div>
     </div>
   )

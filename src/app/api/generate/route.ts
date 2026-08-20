@@ -6,7 +6,7 @@ import { getJobCount } from "@/lib/jobs"
 
 export async function POST(request: Request) {
   const ip = getClientIp(request)
-  const rateLimit = checkRateLimit(`generate:${ip}`)
+  const rateLimit = checkRateLimit(`generate:${ip}`, 10)
 
   if (!rateLimit.allowed) {
     return NextResponse.json(
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     )
   }
 
-  const maxConcurrent = parseInt(process.env.MAX_CONCURRENT_JOBS || "5", 10)
+  const maxConcurrent = parseInt(process.env.MAX_CONCURRENT_JOBS || "20", 10)
   if (getJobCount() >= maxConcurrent) {
     return NextResponse.json(
       { error: "Server is busy. Please try again in a moment." },
@@ -50,10 +50,15 @@ export async function POST(request: Request) {
       )
     }
 
-    const result = await startCertificateRequest(
-      domains.map((d: string) => d.trim().toLowerCase()),
-      email.trim().toLowerCase()
-    )
+    const result = await Promise.race([
+      startCertificateRequest(
+        domains.map((d: string) => d.trim().toLowerCase()),
+        email.trim().toLowerCase()
+      ),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Certificate request timed out. The Let's Encrypt API may be slow or unreachable. Please try again.")), 90000)
+      ),
+    ])
 
     return NextResponse.json(
       {
@@ -69,16 +74,17 @@ export async function POST(request: Request) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "An unexpected error occurred"
+    console.error("[generate]", message, error)
 
-    if (message.includes("Rate limit") || message.includes("too many")) {
+    if (message.includes("Rate limit") || message.includes("too many") || message.includes("HTTP 429")) {
       return NextResponse.json(
-        { error: "Let's Encrypt rate limit encountered. Please try again later." },
+        { error: "Let's Encrypt rate limit hit. Too many certificate requests — please wait a few minutes and try again." },
         { status: 429, headers: { ...SECURITY_HEADERS } }
       )
     }
 
     return NextResponse.json(
-      { error: "Failed to start certificate request. Please check your details and try again." },
+      { error: `Failed to start certificate request: ${message}` },
       { status: 500, headers: { ...SECURITY_HEADERS } }
     )
   }

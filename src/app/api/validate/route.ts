@@ -52,6 +52,7 @@ export async function POST(request: Request) {
       { headers: { ...SECURITY_HEADERS } }
     )
   } catch (error) {
+    console.error("[validate] Error:", error)
     const message =
       error instanceof Error ? error.message : "Validation failed"
 

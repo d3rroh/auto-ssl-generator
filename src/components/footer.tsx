@@ -21,7 +21,8 @@ function getStatusText(state: SceneState): string {
 
 function getStatusColor(state: SceneState): string {
   if (state === "dns_verified" || state === "certificate_ready" || state === "unlocking") return "#00d26a"
-  if (state === "requesting" || state === "dns_challenge" || state === "validating") return "#ff2d2d"
+  if (state === "dns_challenge") return "#2ec7ff"
+  if (state === "requesting" || state === "validating") return "#ff2d2d"
   return "#2ec7ff"
 }
 

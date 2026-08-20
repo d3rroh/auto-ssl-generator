@@ -544,6 +544,725 @@ body {
   outline: none;
 }
 
+/* ── DNS Record Card (hero) ─────────────────────────────────── */
+.dns-record-card {
+  background:
+    linear-gradient(165deg, rgba(46,199,255,0.04) 0%, rgba(255,255,255,0) 40%),
+    linear-gradient(165deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 50%),
+    rgba(10,22,38,0.78);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(46,199,255,0.14);
+  border-radius: 14px;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.35),
+    0 0 0 0.5px rgba(255,255,255,0.04) inset,
+    0 1px 0 0 rgba(46,199,255,0.08) inset;
+  transition: border-color 200ms ease-out, box-shadow 200ms ease-out;
+  animation: panel-reveal 0.4s ease-out;
+}
+
+.dns-record-card:hover {
+  border-color: rgba(46,199,255,0.22);
+  box-shadow:
+    0 24px 64px rgba(0,0,0,0.40),
+    0 0 30px -10px rgba(46,199,255,0.06),
+    0 0 0 0.5px rgba(255,255,255,0.06) inset,
+    0 1px 0 0 rgba(46,199,255,0.10) inset;
+}
+
+/* ── DNS Record Rows ────────────────────────────────────────── */
+.dns-record-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02);
+  margin-bottom: 8px;
+}
+
+.dns-record-row:last-of-type {
+  margin-bottom: 0;
+}
+
+.dns-record-label {
+  flex-shrink: 0;
+  width: 48px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.dns-record-value {
+  margin-top: 8px;
+}
+
+/* ── DNS Status Strip ───────────────────────────────────────── */
+.dns-status-strip {
+  background:
+    linear-gradient(165deg, rgba(46,199,255,0.05) 0%, rgba(255,255,255,0) 50%),
+    rgba(10,22,38,0.60);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(46,199,255,0.10);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+/* ── DNS Verified Card ──────────────────────────────────────── */
+.dns-verified-card {
+  background:
+    linear-gradient(165deg, rgba(0,210,106,0.04) 0%, rgba(255,255,255,0) 50%),
+    rgba(10,22,38,0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0,210,106,0.20);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow:
+    0 12px 40px rgba(0,0,0,0.30),
+    0 0 0 0.5px rgba(255,255,255,0.03) inset;
+  animation: verified-settle 0.4s ease-out;
+}
+
+/* ── What Happens Next ──────────────────────────────────────── */
+.what-happens-next {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+/* ── DNS Provider Help ──────────────────────────────────────── */
+.dns-provider-help {
+  border-radius: 0 0 14px 14px;
+  transition: background 150ms ease-out;
+}
+
+.dns-provider-help button:first-child {
+  transition: background 150ms ease-out;
+}
+
+.dns-provider-help button:first-child:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+/* ── Verify Button (crimson accent) ─────────────────────────── */
+.btn-verify {
+  position: relative;
+  overflow: hidden;
+  background: #ff2d2d;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  border: none;
+  border-radius: 10px;
+  padding: 13px 24px;
+  cursor: pointer;
+  transition: background 180ms ease-out, box-shadow 180ms ease-out, transform 180ms ease-out;
+}
+
+.btn-verify:hover:not(:disabled) {
+  background: #ff4444;
+  box-shadow: 0 6px 24px rgba(255,45,45,0.30), 0 0 0 1px rgba(255,45,45,0.10) inset;
+  transform: translateY(-1px);
+}
+
+.btn-verify:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px rgba(255,45,45,0.20);
+}
+
+.btn-verify:disabled {
+  opacity: 0.40;
+  cursor: not-allowed;
+}
+
+.btn-verify:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255,45,45,0.30), 0 6px 24px rgba(255,45,45,0.15);
+}
+
+/* ── Verify Secondary Button ────────────────────────────────── */
+.btn-verify-secondary {
+  position: relative;
+  background: rgba(255,255,255,0.04);
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: background 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out, transform 180ms ease-out;
+}
+
+.btn-verify-secondary:hover:not(:disabled) {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.14);
+  color: var(--text-primary);
+}
+
+.btn-verify-secondary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-verify-secondary:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ── DNS Loader ──────────────────────────────────────────────── */
+.dns-loader-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  height: 180px;
+  font-family: var(--font-mono), "JetBrains Mono", monospace;
+  font-size: 1.1em;
+  font-weight: 500;
+  color: var(--text-primary);
+  border-radius: 50%;
+  background-color: transparent;
+  user-select: none;
+}
+
+.dns-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background-color: transparent;
+  animation: dns-loader-rotate 2s linear infinite;
+  z-index: 0;
+}
+
+@keyframes dns-loader-rotate {
+  0% {
+    transform: rotate(90deg);
+    box-shadow:
+      0 10px 20px 0 rgba(255,255,255,0.08) inset,
+      0 20px 30px 0 rgba(255,45,45,0.15) inset,
+      0 60px 60px 0 rgba(123,104,238,0.1) inset;
+  }
+  50% {
+    transform: rotate(270deg);
+    box-shadow:
+      0 10px 20px 0 rgba(255,255,255,0.08) inset,
+      0 20px 10px 0 rgba(255,45,45,0.25) inset,
+      0 40px 60px 0 rgba(11,23,40,0.4) inset;
+  }
+  100% {
+    transform: rotate(450deg);
+    box-shadow:
+      0 10px 20px 0 rgba(255,255,255,0.08) inset,
+      0 20px 30px 0 rgba(255,45,45,0.15) inset,
+      0 60px 60px 0 rgba(123,104,238,0.1) inset;
+  }
+}
+
+.dns-loader-text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 1px;
+}
+
+.dns-loader-letter {
+  display: inline-block;
+  opacity: 0.4;
+  transform: translateY(0);
+  animation: dns-loader-letter-anim 2s infinite;
+  border-radius: 50ch;
+}
+
+@keyframes dns-loader-letter-anim {
+  0%, 100% {
+    opacity: 0.4;
+    transform: translateY(0);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.15);
+    color: #ff2d2d;
+  }
+  40% {
+    opacity: 0.7;
+    transform: translateY(0);
+  }
+}
+
+/* ── DNS node animations ─────────────────────────────────────── */
+@keyframes dns-node-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.6); opacity: 0; }
+}
+
+@keyframes dns-node-orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── Certificate Pipeline ───────────────────────────────────── */
+.cert-pipeline-panel {
+  padding: 0;
+  overflow: hidden;
+}
+
+.cert-pipeline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: linear-gradient(165deg, rgba(46,199,255,0.03) 0%, transparent 60%);
+}
+
+.cert-pipeline-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+.cert-pipeline-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  max-width: 340px;
+}
+
+.cert-pipeline-timer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(46,199,255,0.06);
+  border: 1px solid rgba(46,199,255,0.12);
+}
+
+.cert-pipeline-timer-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #2ec7ff;
+  animation: status-glow 2s ease-in-out infinite;
+}
+
+.cert-pipeline-stages {
+  padding: 20px 24px;
+}
+
+.cert-pipeline-row {
+  display: flex;
+  gap: 16px;
+}
+
+.cert-pipeline-line-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.pipeline-icon-wrap {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pipeline-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--border-subtle);
+  background: rgba(255,255,255,0.02);
+  transition: all 300ms ease-out;
+  z-index: 2;
+}
+
+.pipeline-icon--completed {
+  border-color: rgba(0,210,106,0.35);
+  background: rgba(0,210,106,0.08);
+  color: #00d26a;
+}
+
+.pipeline-icon--active {
+  border-color: rgba(46,199,255,0.40);
+  background: rgba(46,199,255,0.08);
+  color: #2ec7ff;
+}
+
+.pipeline-icon--failed {
+  border-color: rgba(239,68,68,0.40);
+  background: rgba(239,68,68,0.08);
+  color: #ef4444;
+}
+
+.pipeline-icon--pending {
+  color: var(--text-muted);
+}
+
+.pipeline-icon-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(46,199,255,0.20);
+  animation: scan-pulse 2s ease-in-out infinite;
+}
+
+.cert-pipeline-line {
+  width: 1.5px;
+  flex: 1;
+  min-height: 28px;
+  background: var(--border-subtle);
+  margin: 4px 0;
+  position: relative;
+  overflow: hidden;
+  border-radius: 1px;
+}
+
+.cert-pipeline-line--completed {
+  background: rgba(0,210,106,0.25);
+}
+
+.cert-pipeline-line--active {
+  background: rgba(46,199,255,0.12);
+}
+
+.cert-pipeline-line-packet {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 8px;
+  border-radius: 2px;
+  background: #2ec7ff;
+  box-shadow: 0 0 6px rgba(46,199,255,0.5);
+  animation: pipeline-packet 1.2s ease-in-out infinite;
+}
+
+@keyframes pipeline-packet {
+  0%   { top: -4px; opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { top: calc(100% + 4px); opacity: 0; }
+}
+
+.cert-pipeline-content {
+  padding-bottom: 20px;
+}
+
+.cert-pipeline-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color 200ms ease-out;
+}
+
+.cert-pipeline-label--completed {
+  color: #00d26a;
+}
+
+.cert-pipeline-label--active {
+  color: #2ec7ff;
+}
+
+.cert-pipeline-label--failed {
+  color: #ef4444;
+}
+
+.cert-pipeline-badge {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.cert-pipeline-badge--done {
+  color: #00d26a;
+  background: rgba(0,210,106,0.08);
+  border: 1px solid rgba(0,210,106,0.15);
+}
+
+.cert-pipeline-badge--active {
+  color: #2ec7ff;
+  background: rgba(46,199,255,0.08);
+  border: 1px solid rgba(46,199,255,0.15);
+}
+
+.cert-pipeline-badge--failed {
+  color: #ef4444;
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.15);
+}
+
+.cert-pipeline-desc {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  opacity: 0.7;
+}
+
+.cert-pipeline-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  background: rgba(0,0,0,0.15);
+}
+
+.cert-pipeline-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cert-pipeline-status-indicator--active {
+  color: #2ec7ff;
+}
+
+.cert-pipeline-status-indicator--success {
+  color: #00d26a;
+}
+
+.cert-pipeline-status-indicator--failed {
+  color: #ef4444;
+}
+
+/* ── Verification Shield ────────────────────────────────────── */
+.verification-shield {
+  filter: drop-shadow(0 0 8px rgba(46,199,255,0.12));
+}
+
+.verification-ring {
+  animation: dns-node-orbit 12s linear infinite;
+  transform-origin: 40px 44px;
+}
+
+.verification-ring-dot {
+  animation: dns-node-orbit 4s linear infinite;
+  transform-origin: 40px 44px;
+}
+
+/* ── Certificate Success Hero ──────────────────────────────── */
+.cert-success-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cert-success-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background:
+    linear-gradient(165deg, rgba(0,210,106,0.05) 0%, transparent 50%),
+    linear-gradient(165deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 50%),
+    rgba(10,22,38,0.78);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(0,210,106,0.18);
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.30),
+    0 0 0 0.5px rgba(255,255,255,0.03) inset,
+    0 1px 0 0 rgba(0,210,106,0.06) inset;
+  animation: verified-settle 0.5s ease-out;
+}
+
+.cert-success-shield {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,210,106,0.06);
+  border: 1px solid rgba(0,210,106,0.15);
+  flex-shrink: 0;
+}
+
+.cert-success-shield-glow {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,210,106,0.12) 0%, transparent 70%);
+  animation: shield-pulse 3s ease-in-out infinite;
+}
+
+.cert-success-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cert-success-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ── Certificate Details Panel ─────────────────────────────── */
+.cert-details-panel {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border-subtle);
+}
+
+.cert-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.cert-info-row:last-child {
+  border-bottom: none;
+}
+
+.cert-info-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.cert-info-value {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ── Cert Files Section ────────────────────────────────────── */
+.cert-files-section {
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border-subtle);
+}
+
+.cert-files-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.cert-files-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cert-files-download-all {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: color 150ms ease-out, background 150ms ease-out;
+}
+
+.cert-files-download-all:hover {
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.04);
+}
+
+.cert-files-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── File Reveal Card ──────────────────────────────────────── */
+.file-reveal-card {
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(255,255,255,0.015);
+  overflow: hidden;
+  transition: border-color 180ms ease-out;
+}
+
+.file-reveal-card:hover {
+  border-color: var(--border-default);
+}
+
+.file-reveal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.file-reveal-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid;
+  flex-shrink: 0;
+}
+
+.cert-file-badge {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  color: var(--text-muted);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid;
+  background: rgba(255,255,255,0.02);
+}
+
+.file-reveal-preview {
+  padding: 10px 14px 12px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  background: rgba(0,0,0,0.12);
+}
+
 /* ── Reduced motion ──────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,
