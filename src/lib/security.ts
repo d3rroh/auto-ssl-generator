@@ -72,28 +72,9 @@ export function generateSecureId(): string {
   return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("")
 }
 
-export async function checkBodySize(request: Request, maxBytes: number = 16384): Promise<boolean> {
+export function checkBodySize(request: Request, maxBytes: number = 16384): boolean {
   const contentLength = request.headers.get("content-length")
   if (contentLength && parseInt(contentLength, 10) > maxBytes) {
-    return false
-  }
-
-  const cloned = request.clone()
-  const reader = cloned.body?.getReader()
-  if (!reader) return true
-
-  let totalBytes = 0
-  try {
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      totalBytes += value.length
-      if (totalBytes > maxBytes) {
-        reader.cancel()
-        return false
-      }
-    }
-  } catch {
     return false
   }
   return true

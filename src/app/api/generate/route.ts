@@ -11,7 +11,7 @@ const SECURITY_HEADERS = {
 const MAX_BODY_BYTES = 16384
 
 export async function POST(request: Request) {
-  if (!(await checkBodySize(request, MAX_BODY_BYTES))) {
+  if (!checkBodySize(request, MAX_BODY_BYTES)) {
     return NextResponse.json(
       { error: "Request body too large." },
       { status: 413, headers: SECURITY_HEADERS }
