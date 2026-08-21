@@ -1,16 +1,17 @@
-import { resolveTxtTcp, resolveTxtTcpPublic } from "./dns-tcp"
+import * as dns from "dns"
+import * as dnsPromises from "dns/promises"
 
-const CLUSTER_DNS = ["10.152.183.213"]
-const PUBLIC_DNS = ["8.8.8.8", "1.1.1.1"]
+dns.setDefaultResultOrder("ipv4first")
 
 export async function checkTxtRecord(
   hostname: string,
   expectedValue: string
 ): Promise<{ found: boolean; records: string[] }> {
   try {
-    const result = await resolveTxtTcp(hostname, [...CLUSTER_DNS, ...PUBLIC_DNS])
-    const found = result.records.some((r) => r === expectedValue)
-    return { found, records: result.records }
+    const records = await dnsPromises.resolveTxt(hostname)
+    const flat = records.map(r => r.join(""))
+    const found = flat.some(r => r === expectedValue)
+    return { found, records: flat }
   } catch {
     return { found: false, records: [] }
   }
@@ -20,9 +21,14 @@ export async function checkTxtRecordPublic(
   hostname: string,
   expectedValue: string
 ): Promise<{ found: boolean; records: string[] }> {
+  const servers = ["8.8.8.8", "1.1.1.1"]
+  const resolver = new dnsPromises.Resolver()
+  resolver.setServers(servers)
   try {
-    const result = await resolveTxtTcpPublic(hostname, expectedValue, PUBLIC_DNS)
-    return { found: result.found, records: result.records }
+    const records = await resolver.resolveTxt(hostname)
+    const flat = records.map(r => r.join(""))
+    const found = flat.some(r => r === expectedValue)
+    return { found, records: flat }
   } catch {
     return { found: false, records: [] }
   }
