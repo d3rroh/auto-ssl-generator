@@ -13,8 +13,8 @@ function getStatusText(state: SceneState): string {
     case "dns_challenge": return "WAITING FOR DNS"
     case "dns_verified": return "DOMAIN VERIFIED"
     case "validating": return "CERTIFICATE VALIDATION"
-    case "certificate_ready": return "CERTIFICATE READY"
-    case "unlocking": return "CERTIFICATE READY"
+    case "certificate_ready": return "SSL CERTIFICATE READY"
+    case "unlocking": return "SSL CERTIFICATE READY"
     default: return "SECURE SESSION"
   }
 }

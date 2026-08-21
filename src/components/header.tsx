@@ -44,12 +44,15 @@ function StatusBadge({ sceneState }: { sceneState: SceneState }) {
       {/* Status indicator */}
       <div
         className="flex items-center gap-2 rounded-full px-3 py-1"
-        style={{ background: "rgba(7,16,28,0.60)", border: "1px solid rgba(120,180,220,0.10)" }}
+        style={{
+          background: showCheck ? "rgba(0,210,106,0.06)" : "rgba(7,16,28,0.60)",
+          border: showCheck ? "1px solid rgba(0,210,106,0.18)" : "1px solid rgba(120,180,220,0.10)",
+        }}
       >
         <span className="relative flex h-[5px] w-[5px]">
           <span
             className="absolute inline-flex h-full w-full rounded-full opacity-40"
-            style={{ backgroundColor: color, animation: "status-glow 3s ease-in-out infinite" }}
+            style={{ backgroundColor: color, animation: showCheck ? undefined : "status-glow 3s ease-in-out infinite" }}
           />
           <span
             className="relative inline-flex h-[5px] w-[5px] rounded-full"

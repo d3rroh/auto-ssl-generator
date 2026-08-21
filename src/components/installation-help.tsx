@@ -50,9 +50,12 @@ export function InstallationHelp({ domains }: { domains: string[] }) {
 
   return (
     <div className="panel p-5">
-      <h2 className="mb-4 text-[13px] font-semibold text-text-primary">
-        Installation Guide
-      </h2>
+      <div className="mb-4">
+        <span className="mono text-[9px] font-semibold tracking-[0.12em] text-text-muted uppercase">INSTALLATION</span>
+        <h2 className="mt-1 text-[13px] font-semibold text-text-primary">
+          Need help installing your certificate?
+        </h2>
+      </div>
 
       <Tabs defaultValue="nginx" className="w-full">
         <TabsList className="mb-4 grid w-full grid-cols-4 bg-base/40 sm:grid-cols-7">

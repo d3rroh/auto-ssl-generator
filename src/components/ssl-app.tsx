@@ -10,7 +10,6 @@ import { ProgressStepper } from "@/components/progress-stepper"
 import { CertificateProgress } from "@/components/certificate-progress"
 import { CertificateSuccess } from "@/components/certificate-success"
 import { CertificateUnlockAnimation } from "@/components/certificate-unlock"
-import { CertificateFileViewer } from "@/components/file-viewer"
 import { InstallationHelp } from "@/components/installation-help"
 import type { SceneState } from "@/components/three-scene"
 
@@ -432,24 +431,18 @@ export function SslApp({ onSceneStateChange }: { onSceneStateChange?: (state: Sc
 
         {/* ── SUCCESS ── */}
         {step === "success" && certResult && fileResult && (
-          <div className="space-y-4 animate-fade-in">
-            <div className="mx-auto max-w-[600px]">
+          <div className="space-y-5 animate-fade-in">
+            <div className="mx-auto max-w-[960px]">
               <CertificateSuccess
                 domains={certResult.domains}
                 issuedAt={certResult.issuedAt}
                 expiresAt={certResult.expiresAt}
-              />
-            </div>
-
-            <div className="mx-auto max-w-[600px]">
-              <CertificateFileViewer
                 files={fileResult}
-                jobId={jobResult?.jobId || ""}
-                domains={certResult.domains}
+                jobId={jobResult?.jobId}
               />
             </div>
 
-            <div className="mx-auto max-w-[600px]">
+            <div className="mx-auto max-w-[960px]">
               <InstallationHelp domains={certResult.domains} />
             </div>
 
