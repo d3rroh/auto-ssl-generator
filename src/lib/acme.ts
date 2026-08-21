@@ -6,10 +6,6 @@ import { createJob, updateJob, getJob, type Job, type Challenge } from "./jobs"
 import { generateSecureId } from "./security"
 import { sanitizeDomain, sanitizeEmail } from "./validation"
 import { checkTxtRecordPublic } from "./dns"
-import { patchDnsLookup } from "./dns-tcp"
-
-// Patch Node.js dns.lookup to use TCP — UDP is broken by Cilium BPF datapath
-patchDnsLookup()
 
 // Force IPv4 — Docker has no IPv6, Node.js tries it first and hangs
 dns.setDefaultResultOrder("ipv4first")
