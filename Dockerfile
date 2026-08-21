@@ -25,7 +25,6 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --chown=nextjs:nodejs tcp-dns-bootstrap.js ./
 
 RUN mkdir -p /tmp/cert-work && chown nextjs:nodejs /tmp/cert-work
 
@@ -35,4 +34,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "--dns-result-order=ipv4first", "--require", "./tcp-dns-bootstrap.js", "server.js"]
+CMD ["node", "--dns-result-order=ipv4first", "server.js"]

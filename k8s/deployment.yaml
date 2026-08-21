@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auto-ssl-generator
+  namespace: auto-ssl-generator
+  labels:
+    app: auto-ssl-generator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auto-ssl-generator
+  template:
+    metadata:
+      labels:
+        app: auto-ssl-generator
+    spec:
+      hostNetwork: true
+      containers:
+      - name: auto-ssl-generator
+        image: d3rroh/auto-ssl-generator:latest
+        ports:
+        - containerPort: 3000
+          hostPort: 3000
+        env:
+        - name: NODE_ENV
+          value: production
+        - name: NODE_OPTIONS
+          value: "--dns-result-order=ipv4first"
+        - name: ACME_DIRECTORY_URL
+          value: "https://acme-v02.api.letsencrypt.org/directory"
+        - name: MAX_CONCURRENT_JOBS
+          value: "20"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 30
