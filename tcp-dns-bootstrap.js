@@ -1,11 +1,14 @@
 // tcp-dns-bootstrap.js — loaded via --require, runs BEFORE net.js or any other module
-// Patches dns.lookup to use TCP DNS, since UDP is broken by Cilium BPF datapath.
+// CRITICAL: We must patch dns.lookup BEFORE requiring net, because net.js
+// destructures `const { lookup } = require('dns')` at load time.
 
-const net = require('net');
 const dns = require('dns');
 
-const DNS_SERVERS = ['10.152.183.213', '8.8.8.8', '1.1.1.1'];
+// 1. Patch dns.lookup FIRST (before net.js loads)
+const _originalLookup = dns.lookup;
+
 const cache = new Map();
+const DNS_SERVERS = ['10.1.0.161', '10.1.0.18', '8.8.8.8', '1.1.1.1'];
 
 function buildQuery(name, type) {
   const labels = name.replace(/\.$/, '').split('.');
@@ -62,6 +65,8 @@ function parseResponse(buf) {
 
 function queryTcp(server, query) {
   return new Promise((resolve, reject) => {
+    // Use raw net.createConnection with the patched dns.lookup
+    const net = require('net');
     const timer = setTimeout(() => { s.destroy(); reject(new Error('tcp dns timeout')); }, 3000);
     const s = net.createConnection({ host: server, port: 53, family: 4 }, () => {
       const len = Buffer.alloc(2);
@@ -96,20 +101,7 @@ async function resolveA(hostname) {
   return null;
 }
 
-// Eagerly resolve known hostnames at startup
-const eagerHosts = ['acme-v02.api.letsencrypt.org', 'letsencrypt.org'];
-for (const h of eagerHosts) {
-  resolveA(h).then((addrs) => {
-    if (addrs && addrs.length > 0) {
-      cache.set(h, addrs);
-      console.log(`[tcp-dns] Pre-resolved ${h} → ${addrs[0]}`);
-    }
-  }).catch(() => {});
-}
-
-// Patch dns.lookup — this runs before net.js loads, so net.js destructures our patched version
-const _originalLookup = dns.lookup;
-
+// The patched lookup: checks cache first, resolves async via TCP if miss
 dns.lookup = function patchedDnsLookup(hostname, options, callback) {
   if (typeof options === 'function') {
     callback = options;
@@ -127,7 +119,7 @@ dns.lookup = function patchedDnsLookup(hostname, options, callback) {
     return;
   }
 
-  // Not cached — resolve async via TCP, populate cache for next time
+  // Resolve async via TCP, populate cache
   resolveA(hostname).then((addrs) => {
     if (addrs && addrs.length > 0) {
       cache.set(hostname, addrs);
@@ -144,5 +136,19 @@ dns.lookup = function patchedDnsLookup(hostname, options, callback) {
     _originalLookup.call(dns, hostname, options, callback);
   });
 };
+
+// 2. NOW require net (it will destructure our patched dns.lookup)
+const net = require('net');
+
+// 3. Eagerly resolve known hostnames at startup (they'll be cached by the time acme-client needs them)
+const eagerHosts = ['acme-v02.api.letsencrypt.org', 'letsencrypt.org'];
+for (const h of eagerHosts) {
+  resolveA(h).then((addrs) => {
+    if (addrs && addrs.length > 0) {
+      cache.set(h, addrs);
+      console.log(`[tcp-dns] Pre-resolved ${h} → ${addrs[0]}`);
+    }
+  }).catch(() => {});
+}
 
 console.log('[tcp-dns-bootstrap] Patched dns.lookup for TCP DNS resolution');

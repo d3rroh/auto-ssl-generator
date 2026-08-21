@@ -200,7 +200,7 @@ export async function queryWithFallback(
   )
 }
 
-const CLUSTER_DNS = ["10.152.183.213"]
+const CLUSTER_DNS = ["10.1.0.161", "10.1.0.18"]
 const PUBLIC_DNS = ["8.8.8.8", "1.1.1.1"]
 const ALL_DNS = [...CLUSTER_DNS, ...PUBLIC_DNS]
 

@@ -8,7 +8,7 @@ export async function GET() {
   // 1. DNS resolution via TCP (works even when UDP is broken by Cilium)
   try {
     const result = await queryWithFallback(
-      ["10.152.183.213", "8.8.8.8"],
+      ["10.1.0.161", "10.1.0.18", "8.8.8.8"],
       "acme-v02.api.letsencrypt.org",
       1 // A record
     )
