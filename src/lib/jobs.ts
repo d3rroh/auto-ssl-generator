@@ -41,15 +41,47 @@ const jobs: Map<string, Job> = (globalThis as any).__sslJobs ?? new Map<string, 
 if (!(globalThis as any).__sslJobs) (globalThis as any).__sslJobs = jobs
 
 const JOB_EXPIRY = parseInt(process.env.JOB_EXPIRY_MS || "3600000", 10)
+const MAX_TOTAL_JOBS = parseInt(process.env.MAX_TOTAL_JOBS || "100", 10)
 const CLEANUP_INTERVAL = 60000
 
 const STALE_THRESHOLD = 600000 // 10 minutes
+
+type JobDeleteCallback = (jobId: string) => void
+const deleteCallbacks: JobDeleteCallback[] = []
+
+export function onJobDelete(callback: JobDeleteCallback): void {
+  deleteCallbacks.push(callback)
+}
+
+function notifyDelete(jobId: string): void {
+  for (const cb of deleteCallbacks) {
+    try { cb(jobId) } catch { /* ignore */ }
+  }
+}
+
+function evictOldestJob(): void {
+  let oldest: string | null = null
+  let oldestTime = Infinity
+  for (const [id, job] of jobs) {
+    if (job.status === "completed" || job.status === "failed") {
+      if (job.lastAccessed < oldestTime) {
+        oldestTime = job.lastAccessed
+        oldest = id
+      }
+    }
+  }
+  if (oldest) {
+    jobs.delete(oldest)
+    notifyDelete(oldest)
+  }
+}
 
 setInterval(() => {
   const now = Date.now()
   for (const [id, job] of jobs) {
     if (now - job.lastAccessed > JOB_EXPIRY) {
       jobs.delete(id)
+      notifyDelete(id)
     } else if (
       job.status !== "completed" &&
       job.status !== "failed" &&
@@ -60,8 +92,15 @@ setInterval(() => {
   }
 }, CLEANUP_INTERVAL)
 
-export function createJob(job: Job): void {
+export function createJob(job: Job): boolean {
+  if (jobs.size >= MAX_TOTAL_JOBS) {
+    evictOldestJob()
+  }
+  if (jobs.size >= MAX_TOTAL_JOBS) {
+    return false
+  }
   jobs.set(job.id, job)
+  return true
 }
 
 export function getJob(id: string): Job | undefined {
@@ -82,7 +121,11 @@ export function updateJob(id: string, updates: Partial<Job>): Job | undefined {
 }
 
 export function deleteJob(id: string): boolean {
-  return jobs.delete(id)
+  const existed = jobs.delete(id)
+  if (existed) {
+    notifyDelete(id)
+  }
+  return existed
 }
 
 export function getJobCount(): number {

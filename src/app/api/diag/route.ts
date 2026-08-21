@@ -1,33 +1,40 @@
 import { NextResponse } from "next/server"
 import * as https from "https"
 import * as dnsPromises from "dns/promises"
+import { checkRateLimit, getClientIp } from "@/lib/security"
 
-export async function GET() {
+const SECURITY_HEADERS = {
+  "X-Content-Type-Options": "nosniff",
+}
+
+export async function GET(request: Request) {
+  const ip = getClientIp(request)
+  const rateLimit = checkRateLimit(`diag:${ip}`, 5, 60000)
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests." },
+      { status: 429, headers: SECURITY_HEADERS }
+    )
+  }
+
   const results: Record<string, unknown> = {}
 
-  // 1. DNS resolution
   try {
     const resolver = new dnsPromises.Resolver()
     const addresses = await resolver.resolve4("acme-v02.api.letsencrypt.org")
-    results.dns = { resolved: addresses.length > 0, addresses: addresses.map(a => ({ address: a, family: 4 })), method: "builtin" }
-  } catch (err: unknown) {
-    results.dns = { resolved: false, error: err instanceof Error ? err.message : String(err) }
+    results.dns = { resolved: addresses.length > 0 }
+  } catch {
+    results.dns = { resolved: false }
   }
 
-  // 2. HTTPS connectivity
   try {
-    const connectResult = await new Promise<{ status: number; headers: Record<string, string> }>((resolve, reject) => {
+    await new Promise<{ status: number }>((resolve, reject) => {
       const req = https.get("https://acme-v02.api.letsencrypt.org/directory", {
         timeout: 10000,
         family: 4,
       }, (res) => {
-        const headers: Record<string, string> = {}
-        if (res.headers) {
-          for (const [k, v] of Object.entries(res.headers)) {
-            if (typeof v === "string") headers[k] = v
-          }
-        }
-        resolve({ status: res.statusCode || 0, headers })
+        resolve({ status: res.statusCode || 0 })
         res.resume()
       })
       req.on("error", reject)
@@ -36,16 +43,9 @@ export async function GET() {
         reject(new Error("HTTPS connection timed out after 10s"))
       })
     })
-    results.https = { reachable: true, status: connectResult.status, server: connectResult.headers["server"] || "unknown" }
-  } catch (err: unknown) {
-    results.https = { reachable: false, error: err instanceof Error ? err.message : String(err) }
-  }
-
-  // 3. Node.js info
-  results.node = {
-    version: process.version,
-    platform: process.platform,
-    arch: process.arch,
+    results.https = { reachable: true }
+  } catch {
+    results.https = { reachable: false }
   }
 
   const allOk = results.dns && (results.dns as { resolved: boolean }).resolved &&
@@ -53,9 +53,8 @@ export async function GET() {
 
   return NextResponse.json({
     status: allOk ? "ok" : "network_issue",
-    ...results,
   }, {
     status: allOk ? 200 : 503,
-    headers: { "Content-Type": "application/json" },
+    headers: SECURITY_HEADERS,
   })
 }

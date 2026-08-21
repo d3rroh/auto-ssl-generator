@@ -2,7 +2,7 @@ import * as acme from "acme-client"
 import * as crypto from "crypto"
 import * as dns from "dns"
 import * as https from "https"
-import { createJob, updateJob, getJob, type Job, type Challenge } from "./jobs"
+import { createJob, updateJob, getJob, onJobDelete, type Job, type Challenge } from "./jobs"
 import { generateSecureId } from "./security"
 import { sanitizeDomain, sanitizeEmail } from "./validation"
 import { checkTxtRecordPublic } from "./dns"
@@ -33,6 +33,10 @@ interface StoredState {
 
 const stateStore: Map<string, StoredState> = (globalThis as any).__sslStateStore ?? new Map<string, StoredState>()
 if (!(globalThis as any).__sslStateStore) (globalThis as any).__sslStateStore = stateStore
+
+onJobDelete((jobId) => {
+  stateStore.delete(jobId)
+})
 
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   return Promise.race([

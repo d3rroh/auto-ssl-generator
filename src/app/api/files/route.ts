@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server"
 import { getJob, deleteJob } from "@/lib/jobs"
-import { checkRateLimit, getClientIp, SECURITY_HEADERS } from "@/lib/security"
+import { checkRateLimit, getClientIp } from "@/lib/security"
 import JSZip from "jszip"
+
+const SECURITY_HEADERS = {
+  "X-Content-Type-Options": "nosniff",
+}
 
 export async function GET(request: Request) {
   const ip = getClientIp(request)
@@ -10,7 +14,7 @@ export async function GET(request: Request) {
   if (!rateLimit.allowed) {
     return NextResponse.json(
       { error: "Too many requests." },
-      { status: 429, headers: { ...SECURITY_HEADERS } }
+      { status: 429, headers: SECURITY_HEADERS }
     )
   }
 
@@ -19,10 +23,10 @@ export async function GET(request: Request) {
   const fileType = url.searchParams.get("type")
   const download = url.searchParams.get("download")
 
-  if (!jobId) {
+  if (!jobId || typeof jobId !== "string" || !/^[a-f0-9]{48}$/.test(jobId)) {
     return NextResponse.json(
-      { error: "Job ID is required." },
-      { status: 400, headers: { ...SECURITY_HEADERS } }
+      { error: "Invalid job ID." },
+      { status: 400, headers: SECURITY_HEADERS }
     )
   }
 
@@ -30,7 +34,7 @@ export async function GET(request: Request) {
   if (!job || !job.certificate) {
     return NextResponse.json(
       { error: "Certificate not found or expired." },
-      { status: 404, headers: { ...SECURITY_HEADERS } }
+      { status: 404, headers: SECURITY_HEADERS }
     )
   }
 
@@ -47,7 +51,7 @@ export async function GET(request: Request) {
       headers: {
         ...SECURITY_HEADERS,
         "Content-Type": "application/zip",
-        "Content-Disposition": `attachment; filename="ssl-certificates-${job.domains[0].replace(/\./g, "-")}.zip"`,
+        "Content-Disposition": `attachment; filename="ssl-certificates-${job.domains[0].replace(/[^a-zA-Z0-9.-]/g, "").replace(/\./g, "-")}.zip"`,
       },
     })
   }
@@ -64,7 +68,7 @@ export async function GET(request: Request) {
     if (!file) {
       return NextResponse.json(
         { error: "Invalid file type." },
-        { status: 400, headers: { ...SECURITY_HEADERS } }
+        { status: 400, headers: SECURITY_HEADERS }
       )
     }
 
@@ -89,13 +93,13 @@ export async function GET(request: Request) {
     if (!content) {
       return NextResponse.json(
         { error: "Invalid file type." },
-        { status: 400, headers: { ...SECURITY_HEADERS } }
+        { status: 400, headers: SECURITY_HEADERS }
       )
     }
 
     return NextResponse.json(
       { content },
-      { headers: { ...SECURITY_HEADERS } }
+      { headers: SECURITY_HEADERS }
     )
   }
 
@@ -109,21 +113,31 @@ export async function GET(request: Request) {
       expiresAt: job.certificate.expiresAt,
       domains: job.domains,
     },
-    { headers: { ...SECURITY_HEADERS } }
+    { headers: SECURITY_HEADERS }
   )
 }
 
 export async function DELETE(request: Request) {
+  const ip = getClientIp(request)
+  const rateLimit = checkRateLimit(`files-delete:${ip}`, 20)
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests." },
+      { status: 429, headers: SECURITY_HEADERS }
+    )
+  }
+
   const url = new URL(request.url)
   const jobId = url.searchParams.get("jobId")
 
-  if (!jobId) {
+  if (!jobId || typeof jobId !== "string" || !/^[a-f0-9]{48}$/.test(jobId)) {
     return NextResponse.json(
-      { error: "Job ID is required." },
-      { status: 400, headers: { ...SECURITY_HEADERS } }
+      { error: "Invalid job ID." },
+      { status: 400, headers: SECURITY_HEADERS }
     )
   }
 
   deleteJob(jobId)
-  return NextResponse.json({ ok: true }, { headers: { ...SECURITY_HEADERS } })
+  return NextResponse.json({ ok: true }, { headers: SECURITY_HEADERS })
 }
