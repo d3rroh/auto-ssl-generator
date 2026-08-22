@@ -163,7 +163,8 @@ function FileCard({
 
   return (
     <motion.div
-      className={`file-card-extended ${isPrivate ? "file-card-private" : ""}`}
+      className={`file-card-extended glass-reflection ${isPrivate ? "file-card-private" : ""}`}
+      data-glass-success
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay, ease: EASE_OUT }}
@@ -266,11 +267,12 @@ export function CertificateSuccess({
   }, [jobId])
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
 
       {/* ── SUCCESS HERO ─────────────────────────────────── */}
       <motion.div
-        className="success-hero"
+        className="success-hero glass-reflection"
+        data-glass-success
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: EASE_OUT }}
@@ -333,7 +335,8 @@ export function CertificateSuccess({
 
       {/* ── SECURED DOMAIN ───────────────────────────────── */}
       <motion.div
-        className="success-domain-panel"
+        className="success-domain-panel glass-reflection"
+        data-glass-success
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, delay: 0.3 }}
@@ -356,7 +359,8 @@ export function CertificateSuccess({
 
       {/* ── CERTIFICATE DETAILS ──────────────────────────── */}
       <motion.div
-        className="success-details-panel"
+        className="success-details-panel glass-reflection"
+        data-glass-success
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, delay: 0.4 }}
@@ -375,7 +379,8 @@ export function CertificateSuccess({
 
       {/* ── WHAT WAS GENERATED ───────────────────────────── */}
       <motion.div
-        className="success-generated-panel"
+        className="success-generated-panel glass-reflection"
+        data-glass-success
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, delay: 0.5 }}
@@ -397,7 +402,8 @@ export function CertificateSuccess({
       {/* ── SSL FILES ────────────────────────────────────── */}
       {files && (
         <motion.div
-          className="success-files-panel"
+          className="success-files-panel glass-reflection"
+          data-glass-success
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.6 }}

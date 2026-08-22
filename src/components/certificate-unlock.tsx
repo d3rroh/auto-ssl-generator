@@ -232,13 +232,24 @@ export function CertificateUnlockAnimation({ onComplete }: Props) {
     <>
       <style dangerouslySetInnerHTML={{ __html: ANIMATION_STYLES }} />
 
-      <div className="panel flex flex-col items-center justify-center py-16 px-6 relative overflow-hidden">
+      <div className="unlock-overlay" style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 50,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "rgba(11,23,40,0.85)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+      }}>
+      <div className="panel flex flex-col items-center justify-center py-12 px-6 relative overflow-hidden" style={{ maxWidth: 420, width: "90%" }}>
         {/* ── PHASE 1: Validation complete ────────────── */}
         <AnimatePresence mode="wait">
           {phase === "validated" && (
             <motion.div
               key="validated"
-              className="flex flex-col items-center gap-3"
+            className="flex flex-col items-center gap-4"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
@@ -376,11 +387,12 @@ export function CertificateUnlockAnimation({ onComplete }: Props) {
         {phase !== "done" && (
           <button
             onClick={handleSkip}
-            className="absolute bottom-4 right-4 text-[10px] text-text-muted/50 hover:text-text-muted transition-colors tracking-wider uppercase"
+            className="absolute bottom-5 right-5 text-[10px] text-text-muted/50 hover:text-text-muted transition-colors tracking-wider uppercase"
           >
             Skip
           </button>
         )}
+      </div>
       </div>
     </>
   )

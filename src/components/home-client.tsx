@@ -5,8 +5,10 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { SslApp } from "@/components/ssl-app"
 import { BackgroundScene, type SceneState } from "@/components/three-scene"
+import { useGlassReflection } from "@/hooks/use-glass-reflection"
 
 export default function HomeClient() {
+  useGlassReflection()
   const [sceneState, setSceneState] = useState<SceneState>("idle")
 
   const handleSceneState = useCallback((state: SceneState) => {

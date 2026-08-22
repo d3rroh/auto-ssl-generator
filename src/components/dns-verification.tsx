@@ -85,7 +85,7 @@ function DnsNetworkIcon({ state }: { state: "checking" | "not_found" | "found" }
 export function DnsVerification({ status, domain }: DnsVerificationProps) {
   if (status === "found") {
     return (
-      <div className="dns-verified-card">
+      <div className="dns-verified-card glass-reflection" data-glass-success>
         <div className="flex items-center gap-3">
           <div
             className="flex h-9 w-9 items-center justify-center rounded-full bg-signal-success-dim"

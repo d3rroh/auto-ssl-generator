@@ -243,6 +243,7 @@ export function SslApp({ onSceneStateChange }: { onSceneStateChange?: (state: Sc
     <>
       <Toaster
         position="top-right"
+        offset={20}
         toastOptions={{
           style: {
             background: "#141B2E",
@@ -424,14 +425,12 @@ export function SslApp({ onSceneStateChange }: { onSceneStateChange?: (state: Sc
 
         {/* ── UNLOCKING ── */}
         {step === "unlocking" && (
-          <div className="mx-auto max-w-[520px] animate-fade-in">
-            <CertificateUnlockAnimation onComplete={() => setStep("success")} />
-          </div>
+          <CertificateUnlockAnimation onComplete={() => setStep("success")} />
         )}
 
         {/* ── SUCCESS ── */}
         {step === "success" && certResult && fileResult && (
-          <div className="space-y-5 animate-fade-in">
+          <div className="space-y-8 animate-fade-in pb-8">
             <div className="mx-auto max-w-[960px]">
               <CertificateSuccess
                 domains={certResult.domains}
@@ -446,7 +445,7 @@ export function SslApp({ onSceneStateChange }: { onSceneStateChange?: (state: Sc
               <InstallationHelp domains={certResult.domains} />
             </div>
 
-            <div className="flex justify-center pt-2 pb-8">
+            <div className="flex justify-center pt-4 pb-10">
               <button
                 onClick={handleReset}
                 className="btn-secondary inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-[12px] font-medium"

@@ -161,7 +161,7 @@ export function CertificateForm({ onSubmit, isLoading, error, currentStep = "for
   const isError = config.variant === "error"
 
   return (
-    <div className="panel panel-form p-6">
+    <div className="panel panel-form glass-reflection p-6">
       {showForm && (
         <>
           <h2 className="mb-1 text-base font-semibold text-text-primary">

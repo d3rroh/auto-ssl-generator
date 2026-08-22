@@ -196,7 +196,7 @@ export function CertificateProgress({
   const allComplete = stages.every((s) => s.status === "completed")
 
   return (
-    <div className="panel cert-pipeline-panel">
+    <div className="panel cert-pipeline-panel glass-reflection">
       {/* Header strip */}
       <div className="cert-pipeline-header">
         <div className="flex items-center gap-3">

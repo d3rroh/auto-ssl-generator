@@ -49,7 +49,7 @@ export function InstallationHelp({ domains }: { domains: string[] }) {
   const certPath = `/etc/letsencrypt/live/${primaryDomain}`
 
   return (
-    <div className="panel p-5">
+    <div className="panel glass-reflection p-5">
       <div className="mb-4">
         <span className="mono text-[9px] font-semibold tracking-[0.12em] text-text-muted uppercase">INSTALLATION</span>
         <h2 className="mt-1 text-[13px] font-semibold text-text-primary">

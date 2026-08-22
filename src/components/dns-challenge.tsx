@@ -195,7 +195,7 @@ export function DnsChallenge({ challenges }: DnsChallengeProps) {
   return (
     <div className="space-y-4">
       {challenges.map((challenge) => (
-        <div key={challenge.domain} className="dns-record-card">
+        <div key={challenge.domain} className="dns-record-card glass-reflection">
           {/* Card header */}
           <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-3.5">
             <div className="flex items-center gap-3">
